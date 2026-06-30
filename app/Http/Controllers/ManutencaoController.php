@@ -40,7 +40,20 @@ class ManutencaoController extends Controller
         $pecas = Peca::orderBy('nome')->get();
         $marcas = Marca::orderBy('nome')->get();
 
-        return view('manutencoes.create', compact('veiculos', 'pecas', 'marcas'));
+        $veiculosData = $veiculos->mapWithKeys(fn ($v) => [
+            $v->id => [
+                'unidade' => $v->tipoVeiculo->unidade_medida,
+                'tipos_manutencao' => $v->tipoVeiculo->tiposManutencao->map(fn ($tm) => [
+                    'id' => $tm->id,
+                    'nome' => $tm->nome,
+                ])->values(),
+            ],
+        ]);
+
+        $pecasOptions = $pecas->map(fn ($p) => ['id' => $p->id, 'nome' => $p->nome])->values();
+        $marcasOptions = $marcas->map(fn ($m) => ['id' => $m->id, 'nome' => $m->nome])->values();
+
+        return view('manutencoes.create', compact('veiculos', 'veiculosData', 'pecasOptions', 'marcasOptions'));
     }
 
     public function store(StoreManutencaoRequest $request)
