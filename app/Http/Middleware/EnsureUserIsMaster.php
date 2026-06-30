@@ -15,6 +15,8 @@ class EnsureUserIsMaster
      */
     public function handle(Request $request, Closure $next): Response
     {
+        abort_unless($request->user()?->isMaster(), 403);
+
         return $next($request);
     }
 }
