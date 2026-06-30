@@ -70,7 +70,8 @@ class ManutencaoController extends Controller
         $this->authorize('view', $manutencao);
 
         $manutencao->load(['veiculo', 'tipoManutencao', 'user', 'pecas']);
+        $marcas = Marca::whereIn('id', $manutencao->pecas->pluck('pivot.marca_id'))->pluck('nome', 'id');
 
-        return view('manutencoes.show', compact('manutencao'));
+        return view('manutencoes.show', compact('manutencao', 'marcas'));
     }
 }
