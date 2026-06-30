@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('manutencao_peca', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('manutencao_id')->constrained('manutencoes')->cascadeOnDelete();
+            $table->foreignId('peca_id')->constrained('pecas')->restrictOnDelete();
+            $table->foreignId('marca_id')->constrained('marcas')->restrictOnDelete();
+            $table->unsignedInteger('quantidade')->default(1);
         });
     }
 
