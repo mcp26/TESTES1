@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('tipo_manutencao_tipo_veiculo', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('tipo_manutencao_id')->constrained('tipo_manutencoes')->cascadeOnDelete();
+            $table->foreignId('tipo_veiculo_id')->constrained('tipo_veiculos')->cascadeOnDelete();
+            $table->unique(['tipo_manutencao_id', 'tipo_veiculo_id']);
         });
     }
 
