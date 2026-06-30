@@ -1,7 +1,8 @@
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
+window.bootstrap = bootstrap;
 
 function csrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.content;
