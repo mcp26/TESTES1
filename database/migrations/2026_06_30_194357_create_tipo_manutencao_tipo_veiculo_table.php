@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tipo_manutencao_id')->constrained('tipo_manutencoes')->cascadeOnDelete();
             $table->foreignId('tipo_veiculo_id')->constrained('tipo_veiculos')->cascadeOnDelete();
-            $table->unique(['tipo_manutencao_id', 'tipo_veiculo_id']);
+            $table->unique(['tipo_manutencao_id', 'tipo_veiculo_id'], 'tm_tv_unique');
         });
     }
 
