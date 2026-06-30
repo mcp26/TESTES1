@@ -20,34 +20,38 @@ class PrevisaoManutencaoCalculator
             $previsoes = $previsoes->merge($this->calcularParaVeiculo($veiculo));
         }
 
-        return $previsoes->sortBy('restante');
+        return $previsoes->sortBy('restante')->values();
     }
 
     /**
      * Calcula a previsão de próximas manutenções para um único veículo.
+     * O km/horas "atual" do veículo é estimado pela maior leitura já registrada
+     * em qualquer manutenção (independente do tipo).
      */
     public function calcularParaVeiculo(Veiculo $veiculo): Collection
     {
+        $valorAtualVeiculo = (float) (Manutencao::where('veiculo_id', $veiculo->id)->max('valor_medicao') ?? 0);
+
         $tiposManutencao = $veiculo->tipoVeiculo->tiposManutencao;
 
-        return $tiposManutencao->map(function ($tipoManutencao) use ($veiculo) {
+        return $tiposManutencao->map(function ($tipoManutencao) use ($veiculo, $valorAtualVeiculo) {
             $ultima = Manutencao::where('veiculo_id', $veiculo->id)
                 ->where('tipo_manutencao_id', $tipoManutencao->id)
                 ->orderByDesc('valor_medicao')
                 ->orderByDesc('data_manutencao')
                 ->first();
 
-            $valorAtual = $ultima ? (float) $ultima->valor_medicao : 0;
-            $previsto = $valorAtual + $tipoManutencao->intervalo;
-            $restante = $previsto - $valorAtual;
+            $baseValor = $ultima ? (float) $ultima->valor_medicao : 0;
+            $previsto = $baseValor + $tipoManutencao->intervalo;
+            $restante = $previsto - $valorAtualVeiculo;
 
             return [
                 'veiculo' => $veiculo,
                 'tipo_manutencao' => $tipoManutencao,
                 'ultima_manutencao' => $ultima,
-                'valor_atual' => $valorAtual,
+                'valor_atual_veiculo' => $valorAtualVeiculo,
                 'valor_previsto' => $previsto,
-                'restante' => $tipoManutencao->intervalo,
+                'restante' => $restante,
                 'unidade' => $veiculo->tipoVeiculo->unidade_medida,
             ];
         });
