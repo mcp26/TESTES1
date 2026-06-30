@@ -4,63 +4,17 @@ namespace App\Policies;
 
 use App\Models\Manutencao;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Veiculo;
 
 class ManutencaoPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Manutencao $manutencao): bool
     {
-        return false;
+        return $user->isMaster() || $user->veiculos->contains($manutencao->veiculo_id);
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function createFor(User $user, Veiculo $veiculo): bool
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Manutencao $manutencao): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Manutencao $manutencao): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Manutencao $manutencao): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Manutencao $manutencao): bool
-    {
-        return false;
+        return $user->isMaster() || $user->veiculos->contains($veiculo->id);
     }
 }
