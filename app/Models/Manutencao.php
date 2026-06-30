@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[Fillable(['veiculo_id', 'tipo_manutencao_id', 'user_id', 'data_manutencao', 'valor_medicao'])]
 class Manutencao extends Model
 {
+    protected $table = 'manutencoes';
+
     protected function casts(): array
     {
         return [
