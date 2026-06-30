@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tipo_manutencaos', function (Blueprint $table) {
+        Schema::create('tipo_manutencoes', function (Blueprint $table) {
             $table->id();
+            $table->string('nome');
+            $table->unsignedInteger('intervalo');
             $table->timestamps();
         });
     }
