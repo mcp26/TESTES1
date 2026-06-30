@@ -25,10 +25,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Veículos (visualização escopada por papel; criação/edição é master-only)
+    // Veículos: index/show visíveis a todos (escopados no controller); criação/edição é master-only
     Route::get('/veiculos', [VeiculoController::class, 'index'])->name('veiculos.index');
-    Route::get('/veiculos/{veiculo}', [VeiculoController::class, 'show'])->name('veiculos.show');
+    Route::get('/veiculos/create', [VeiculoController::class, 'create'])->name('veiculos.create')->middleware('master');
+    Route::post('/veiculos', [VeiculoController::class, 'store'])->name('veiculos.store')->middleware('master');
+    Route::get('/veiculos/{veiculo}/edit', [VeiculoController::class, 'edit'])->name('veiculos.edit')->middleware('master');
+    Route::put('/veiculos/{veiculo}', [VeiculoController::class, 'update'])->name('veiculos.update')->middleware('master');
+    Route::patch('/veiculos/{veiculo}/inativar', [VeiculoController::class, 'inativar'])->name('veiculos.inativar')->middleware('master');
+    Route::patch('/veiculos/{veiculo}/ativar', [VeiculoController::class, 'ativar'])->name('veiculos.ativar')->middleware('master');
     Route::get('/veiculos/{veiculo}/documento', [VeiculoController::class, 'documento'])->name('veiculos.documento');
+    Route::get('/veiculos/{veiculo}', [VeiculoController::class, 'show'])->name('veiculos.show');
 
     // Catálogos (ambos os papéis podem criar)
     Route::get('/tipos-veiculo', [TipoVeiculoController::class, 'index'])->name('tipos-veiculo.index');
@@ -58,20 +64,13 @@ Route::middleware('auth')->group(function () {
     // Previsão de próximas manutenções
     Route::get('/previsao', [PrevisaoManutencaoController::class, 'index'])->name('previsao.index');
 
-    // Somente master
-    Route::middleware('master')->group(function () {
-        Route::get('/veiculos-create', [VeiculoController::class, 'create'])->name('veiculos.create');
-        Route::post('/veiculos', [VeiculoController::class, 'store'])->name('veiculos.store');
-        Route::get('/veiculos/{veiculo}/edit', [VeiculoController::class, 'edit'])->name('veiculos.edit');
-        Route::put('/veiculos/{veiculo}', [VeiculoController::class, 'update'])->name('veiculos.update');
-        Route::patch('/veiculos/{veiculo}/inativar', [VeiculoController::class, 'inativar'])->name('veiculos.inativar');
-        Route::patch('/veiculos/{veiculo}/ativar', [VeiculoController::class, 'ativar'])->name('veiculos.ativar');
-
-        Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
-        Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
-        Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
-        Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-        Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+    // Administração de usuários (somente master)
+    Route::middleware('master')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     });
 });
 
